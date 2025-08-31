@@ -1,0 +1,28 @@
+name: Daily Commit
+
+on:
+  schedule:
+    - cron: '0 12 * * *'   # Todos los días a las 12:00 UTC (7:00 a.m. en Colombia)
+  workflow_dispatch:       # Permite ejecutarlo manualmente también
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Update log file
+        run: |
+          echo "Último commit: $(date)" > log.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add log.txt
+          git commit -m "Commit automático del día $(date)" || echo "No hay cambios para commitear"
+
+      - name: Push changes
+        run: git push
